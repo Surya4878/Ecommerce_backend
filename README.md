@@ -28,6 +28,8 @@ Build Tool	Maven
 Testing	JUnit 5, Mockito
 Security	Spring Security (JWT Authentication)
 Logging	SLF4J / Logback
+
+
 🧩 How to Run Locally
 🧱 1. Prerequisites
 
@@ -81,60 +83,62 @@ java -jar target/ecommerce-backend-0.0.1-SNAPSHOT.jar
 The application runs at:
 👉 http://localhost:8080
 
-🧪 5. Test APIs
 
-Use Postman to test the APIs:
+🧪 5. Test Using Postman
 
-Import the collection file → postman/ecommerce-collection.json
+Use the provided Postman Collection:
+📁 postman/ecommerce-collection.json
 
-Run APIs in this order:
+Import the collection and environment into Postman.
 
-Register User
+Run requests in this order:
 
-Login (get JWT token)
+Register a user
 
-Register Admin
+Login to get JWT
 
-Promote Admin (via SQL)
+Register an admin
 
-Admin Login → Create Product
+Promote admin via SQL
 
-Customer → Add to Cart → Checkout → View Orders
+Admin login → Add Product
 
-Admin → Update Order Status
+Customer login → Add to Cart → Checkout
 
-📘 API Documentation
+View Orders → Update Status (Admin)
+
+🧾 API Documentation
 👤 User APIs
 Method	Endpoint	Role	Description
-POST	/api/auth/register	Public	Register new user
+POST	/api/auth/register	Public	Register a new user
 POST	/api/auth/login	Public	Login and receive JWT
-GET	/api/users/{id}	Customer/Admin	View profile
+GET	/api/users/{id}	Customer/Admin	View user profile
 PUT	/api/users/{id}	Customer/Admin	Update user profile
 PUT	/api/users/{id}/change-password	Customer	Change password
-DELETE	/api/users/{id}	Admin	Delete user
+DELETE	/api/users/{id}	Admin	Delete user (Admin only)
 📦 Product APIs
 Method	Endpoint	Role	Description
 POST	/api/products	Admin	Add new product
 PUT	/api/products/{id}	Admin	Update product
 DELETE	/api/products/{id}	Admin	Delete product
-GET	/api/products	Public	View all products (with pagination & filters)
+GET	/api/products	Public	View all products (pagination & filtering supported)
 GET	/api/products/{id}	Public	View product details
 🛒 Cart APIs
 Method	Endpoint	Role	Description
-POST	/api/cart/add/{productId}?quantity=2	Customer	Add product to cart
-PUT	/api/cart/update/{productId}?quantity=3	Customer	Update quantity
-DELETE	/api/cart/remove/{productId}	Customer	Remove from cart
-GET	/api/cart	Customer	View cart contents & total price
+POST	/api/cart/add/{productId}?quantity=2	Customer	Add a product to cart
+PUT	/api/cart/update/{productId}?quantity=3	Customer	Update product quantity
+DELETE	/api/cart/remove/{productId}	Customer	Remove product from cart
+GET	/api/cart	Customer	View cart contents and total price
 🧾 Order APIs
 Method	Endpoint	Role	Description
-POST	/api/orders/checkout	Customer	Checkout cart & simulate payment
+POST	/api/orders/checkout	Customer	Checkout and simulate payment
 GET	/api/orders	Customer	View order history
 GET	/api/orders/{id}	Customer/Admin	View order details
 PUT	/api/orders/{id}/status?status=SHIPPED	Admin	Update order status
-GET	/api/orders/all	Admin	View all orders
+GET	/api/orders/all	Admin	View all orders (Admin only)
 💳 Payment Simulation
 
-Example request:
+Example request body:
 
 {
   "paymentMode": "CREDIT_CARD",
@@ -142,27 +146,30 @@ Example request:
 }
 
 
-If simulateSuccess=true → order is PLACED
-If simulateSuccess=false → order is FAILED
+Responses:
+
+simulateSuccess = true → Order placed successfully (orderStatus = PLACED)
+
+simulateSuccess = false → Payment failed (orderStatus = FAILED)
 
 ⚖️ Inventory Management
 
-Stock is automatically reduced after successful checkout.
+Stock quantity automatically reduced after a successful order.
 
-Attempting to order more than available stock returns 400 Bad Request.
+Prevents users from adding out-of-stock products to their cart.
 
-Out-of-stock products cannot be added to the cart.
+If order quantity > stock → returns 400 Bad Request.
 
 🗃️ Database Schema
-Entity Relationship Diagram (Text Form)
+🧱 Entity Relationships
 User (1) ──── (1) Cart
-User (1) ──── (∞) Order
-Cart (1) ──── (∞) CartItem
-Order (1) ──── (∞) OrderItem
+User (1) ──── (∞) Orders
+Cart (1) ──── (∞) CartItems
+Order (1) ──── (∞) OrderItems
 CartItem (∞) ──── (1) Product
 OrderItem (∞) ──── (1) Product
 
-SQL Schema (MySQL)
+💾 SQL Schema (MySQL)
 CREATE DATABASE IF NOT EXISTS ecommerce_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE ecommerce_db;
 
@@ -226,9 +233,10 @@ CREATE TABLE order_items (
 INSERT INTO products (name, description, price, stock, category, image_url, rating) VALUES
 ('Wireless Mouse', 'Ergonomic wireless mouse', 699.0, 50, 'Electronics', 'https://example.com/mouse.jpg', 4.5),
 ('Mechanical Keyboard', 'RGB mechanical keyboard', 2499.0, 30, 'Electronics', 'https://example.com/keyboard.jpg', 4.7),
-('USB-C Charger', 'Fast 65W USB-C charger', 1299.0, 80, 'Accessories', 'https://example.com/charger.jpg', 4.3);
+('USB-C Charger', 'Fast 65W USB-C charger', 1299.0, 80, 'Accessories', 'https://example.com/char
 
 
 👨‍💻 Author
 
 Surya Prakash C
+
